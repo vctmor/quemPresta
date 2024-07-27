@@ -1,0 +1,95 @@
+# Rodar com:
+# sudo docker-compose up -d
+
+version: '3.8'
+services:
+  db:
+    image: mysql:latest
+    # container_name: mysql-server    
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quemPresta
+      MYSQL_USER: faunus
+      MYSQL_PASSWORD: a1234567
+    # ports:
+    #   - "3306:3306"
+    # volumes:
+    #   - db_data:/var/lib/mysql
+
+  app:
+    image: openjdk:17
+    container_name: quemPresta
+    depends_on:
+      - db
+    ports:
+      - "9090:9090"
+    volumes:
+      - .:/app
+    command: sh -c 'cd /app && ./mvnw spring-boot:run'
+    environment:
+      SPRING_APPLICATION_NAME: quemPresta
+      SERVER_PORT: 9090
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/quemPresta
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: a1234567
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+
+volumes:
+  db_data:
+    external:
+      name: 7f3513d5cf5a8cd8594f817853c94f96bb070a8616ada452460cf2c271630e7a
+
+networks:
+  mynetwork:
+    driver: bridge
+
+
+
+# version: '3.8'
+# services:
+#   db:
+#     image: mysql:latest
+#     container_name: mysql-server    
+#     restart: always
+
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: quemPresta
+#       MYSQL_USER: faunus
+#       MYSQL_PASSWORD: a1234567
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - db_data:/var/lib/mysql
+
+#   app:
+#     image: openjdk:17
+#     container_name: quemPresta
+#     depends_on:
+#       - db
+#     ports:
+#       - "9090:9090"
+#     volumes:
+#       - .:/app
+#     command: sh -c 'cd /app && ./mvnw spring-boot:run'
+
+# volumes:
+#   db_data:
+#     external:
+#       name: 7f3513d5cf5a8cd8594f817853c94f96bb070a8616ada452460cf2c271630e7a
+
+# networks:
+#   mynetwork:
+#     driver: bridge
+
+# spring:
+#   datasource:
+#     url: jdbc:mysql://localhost:3306/quemPresta
+#     username: root
+#     password: a1234567
+#   jpa:
+#     properties:
+#       hibernate:
+#         dialect: org.hibernate.dialect.MySQLDialect
