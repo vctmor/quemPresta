@@ -10,6 +10,6 @@ public class CalcTests {
 
         Calc c = new Calc();
 
-        assertEquals(1, c.division(1, 1));
+        assertEquals(0, c.division(1, 0));
     }
 }
