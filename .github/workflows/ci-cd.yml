@@ -1,5 +1,6 @@
 name: CI/CD Pipeline
 
+# Define os gatilhos que iniciarão o workflow
 on:
   push:
     branches:
@@ -8,41 +9,48 @@ on:
     branches:
       - main
 
+# Define os jobs que serão executados
 jobs:
   build:
+    # Define o ambiente de execução
     runs-on: ubuntu-latest
 
+    # Define a sequência de steps para este job
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      # Step 1: Checkout do código-fonte
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      # Step 2: Configuração do ambiente de build
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
 
-    - name: Build with Maven
-      run: mvn clean install
+      # Step 3: Construção do projeto
+      - name: Build with Maven
+        run: mvn clean install
 
-    - name: Run tests
-      run: mvn test
+      # Step 4: Executar testes
+      - name: Run tests
+        run: mvn test
 
-    - name: Check tests results
-      if: failure()
-      run: echo "Tests failed. Commit will not be pushed."
+  # deploy:
+  #   # O job de deploy só deve rodar após o job de build
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    - name: Deploy to production
-      if: success() && github.ref == 'refs/heads/main'
-      run: |
-        echo "Deploying to production server..."
-        # Adicione aqui os comandos para deploy, por exemplo:
-        # scp -r . user@server:/path/to/deploy
+  #   steps:
+  #     # Step 1: Checkout do código-fonte
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-    # - name: Deploy to production
-    #   if: github.ref == 'refs/heads/main'
-    #   run: |
-    #     echo "Deploying to production server..."
-    #     # Adicione aqui os comandos para deploy, por exemplo:
-    #     # scp -r . user@server:/path/to/deploy
-
+  #     # Step 2: Implantação (exemplo usando AWS CLI)
+  #     - name: Deploy to AWS
+  #       env:
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         AWS_REGION: 'us-east-1'
+  #       run: |
+  #         # Comando de exemplo para implantar na AWS
+  #         aws s3 sync ./target/ s3://your-bucket-name --delete
